@@ -14,3 +14,16 @@ _cdn\_version\_scraper_ is a super simple utility that does the following:
 go get github.com/ropenttd/cdn_version_scraper
 go run github.com/ropenttd/cdn_version_scraper stable
 ```
+
+### Use in CI
+
+Instead of passing the channel via the command line, you can instead pass it as an environment variable:
+
+```
+export PLUGIN_CHANNEL=stable
+go run github.com/ropenttd/cdn_version_scraper
+```
+
+Additionally, setting `PLUGIN_OUTPUTFILE` will additionally write a file containing the output to the specified path.
+
+These environment variables make using this perfect for use as a Drone CI plugin - see the main build repository for more information.
