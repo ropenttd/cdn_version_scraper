@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type VersionData struct {
@@ -24,6 +25,7 @@ type LatestVersions struct {
 var versionStability = []string{
 	// This map is sorted by order of stability, with the most stable lowest in the list.
 	// This is so that stabilities are tested in order, least to most stable.
+	"master",
 	"testing",
 	"stable",
 }
@@ -60,6 +62,17 @@ func findTargetBuildVersion(allVersions []VersionData, channel *string) (ret Ver
 	// We couldn't find the target channel in the manifest :(
 	return VersionData{}, errors.New("no valid OpenTTD versions found on CDN of desired stability level or higher")
 
+}
+
+// decodeGitReferenceVersionString decodes a version string like 20200412-master-g4bfa3ff619
+// and returns its git hash.
+func decodeGitReferenceVersionString(versionData *VersionData) (versionOrGitCommit string) {
+	verArray := strings.Split(versionData.Version, "-")
+	if len(verArray) != 3 {
+		// this isn't a valid version string
+		return versionData.Version
+	}
+	return verArray[2]
 }
 
 // main
@@ -102,7 +115,7 @@ func main() {
 	}
 
 	// This returns a value that can be parsed by bash or whatever shell you choose
-	envString := fmt.Sprintf("OPENTTD_VERSION=\"%v\"", openttdVersion.Version)
+	envString := fmt.Sprintf("OPENTTD_VERSION=\"%v\"", decodeGitReferenceVersionString(&openttdVersion))
 	fmt.Printf(envString)
 
 	outputFile := os.Getenv("PLUGIN_OUTPUT_FILE")
