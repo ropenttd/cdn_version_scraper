@@ -3,6 +3,7 @@
 FROM golang:alpine AS builder
 
 # All these steps will be cached
+RUN apk update && apk add --no-cache ca-certificates
 WORKDIR $GOPATH/src/github.com/ropenttd/cdn_version_scraper
 COPY go.mod .
 COPY go.sum .
@@ -24,6 +25,8 @@ MAINTAINER duck. <me@duck.me.uk>
 
 # Copy the executable
 COPY --from=builder /go/bin/cdn_version_scraper /cdn_version_scraper
+# and the ca-certificates
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # And set it as the entrypoint
 ENTRYPOINT ["/cdn_version_scraper"]
