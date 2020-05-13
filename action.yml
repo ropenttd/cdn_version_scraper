@@ -1,0 +1,18 @@
+# action.yml
+name: 'OpenTTD CDN Version Scraper'
+description: 'Query the latest version of OpenTTD'
+inputs:
+  channel:
+    description: 'Channel to query'
+    required: true
+    default: 'stable'
+outputs:
+  version:
+    description: 'The latest version corresponding to the given channel'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+  - ${{ inputs.channel }}
+  env:
+    GITHUB_ACTION: "true"

@@ -114,26 +114,31 @@ func main() {
 		log.Fatalf("error: %v", err)
 	}
 
-	// This returns a value that can be parsed by bash or whatever shell you choose
-	envString := fmt.Sprintf("OPENTTD_VERSION=\"%v\"", decodeGitReferenceVersionString(&openttdVersion))
-	fmt.Printf(envString)
+	actionMode := os.Getenv("GITHUB_ACTION")
+	if actionMode != "true" {
+		fmt.Printf("::set-output name=version::%v", decodeGitReferenceVersionString(&openttdVersion))
+	} else {
+		// This returns a value that can be parsed by bash or whatever shell you choose
+		envString := fmt.Sprintf("OPENTTD_VERSION=\"%v\"", decodeGitReferenceVersionString(&openttdVersion))
+		fmt.Printf(envString)
 
-	outputFile := os.Getenv("PLUGIN_OUTPUT_FILE")
-	if outputFile != "" {
-		// Also write the version out to the given file
-		file, err := os.Create(outputFile)
-		if err != nil {
-			log.Fatalf("error: %v", err)
-		}
-		defer file.Close()
+		outputFile := os.Getenv("PLUGIN_OUTPUT_FILE")
+		if outputFile != "" {
+			// Also write the version out to the given file
+			file, err := os.Create(outputFile)
+			if err != nil {
+				log.Fatalf("error: %v", err)
+			}
+			defer file.Close()
 
-		_, err = io.WriteString(file, envString)
-		if err != nil {
-			log.Fatalf("error: %v", err)
-		}
-		err = file.Sync()
-		if err != nil {
-			log.Fatalf("error: %v", err)
+			_, err = io.WriteString(file, envString)
+			if err != nil {
+				log.Fatalf("error: %v", err)
+			}
+			err = file.Sync()
+			if err != nil {
+				log.Fatalf("error: %v", err)
+			}
 		}
 	}
 
