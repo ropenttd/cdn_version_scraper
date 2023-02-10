@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v2"
 	"io"
 	"log"
 	"net/http"
@@ -114,31 +114,38 @@ func main() {
 		log.Fatalf("error: %v", err)
 	}
 
-	actionMode := os.Getenv("GITHUB_ACTION")
-	if actionMode != "true" {
-		fmt.Printf("::set-output name=version::%v", decodeGitReferenceVersionString(&openttdVersion))
-	} else {
-		// This returns a value that can be parsed by bash or whatever shell you choose
-		envString := fmt.Sprintf("OPENTTD_VERSION=\"%v\"", decodeGitReferenceVersionString(&openttdVersion))
-		fmt.Printf(envString)
+	// This returns a value that can be parsed by bash or whatever shell you choose
+	envString := fmt.Sprintf("OPENTTD_VERSION=\"%v\"", decodeGitReferenceVersionString(&openttdVersion))
+	fmt.Printf(envString)
 
-		outputFile := os.Getenv("PLUGIN_OUTPUT_FILE")
-		if outputFile != "" {
-			// Also write the version out to the given file
-			file, err := os.Create(outputFile)
-			if err != nil {
-				log.Fatalf("error: %v", err)
+	// Try to find an appropriate output file
+	var outputFile string
+	outputFile, ok := os.LookupEnv("PLUGIN_OUTPUT_FILE")
+	if !ok {
+		actionMode := os.Getenv("GITHUB_ACTIONS")
+		if actionMode == "true" {
+			// We're running as a Github Action.
+			outputFile, ok = os.LookupEnv("GITHUB_OUTPUT")
+			if !ok {
+				fmt.Print("::error::No Github Actions Environment file value")
 			}
-			defer file.Close()
+		}
+	}
+	if outputFile != "" {
+		// Also write the version out to the given file
+		file, err := os.OpenFile(outputFile, os.O_RDWR|os.O_CREATE, 0666)
+		if err != nil {
+			log.Fatalf("error: %v", err)
+		}
+		defer file.Close()
 
-			_, err = io.WriteString(file, envString)
-			if err != nil {
-				log.Fatalf("error: %v", err)
-			}
-			err = file.Sync()
-			if err != nil {
-				log.Fatalf("error: %v", err)
-			}
+		_, err = io.WriteString(file, envString)
+		if err != nil {
+			log.Fatalf("error: %v", err)
+		}
+		err = file.Sync()
+		if err != nil {
+			log.Fatalf("error: %v", err)
 		}
 	}
 
