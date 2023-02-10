@@ -9,6 +9,12 @@ inputs:
 outputs:
   version:
     description: 'The latest version corresponding to the given channel'
+  semver_major:
+    description: 'The major semantic version for this release, if available'
+  semver_minor:
+    description: 'The minor semantic version for this release, if available'
+  semver_patch:
+    description: 'The patch semantic version for this release, if available'
 runs:
   using: 'docker'
   image: 'Dockerfile'

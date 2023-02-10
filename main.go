@@ -125,14 +125,14 @@ func main() {
 	if err != nil {
 		// Problem decoding version, just provide version string.
 		envVars = map[string]string{
-			"VERSION": ver,
+			"version": ver,
 		}
 	} else {
 		envVars = map[string]string{
-			"VERSION":      ver,
-			"SEMVER_MAJOR": strconv.Itoa(int(sver.Major())),
-			"SEMVER_MINOR": strconv.Itoa(int(sver.Minor())),
-			"SEMVER_PATCH": strconv.Itoa(int(sver.Patch())),
+			"version":      ver,
+			"semver_major": strconv.Itoa(int(sver.Major())),
+			"semver_minor": strconv.Itoa(int(sver.Minor())),
+			"semver_patch": strconv.Itoa(int(sver.Patch())),
 		}
 	}
 
