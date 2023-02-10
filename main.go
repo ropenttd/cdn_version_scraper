@@ -3,11 +3,13 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/Masterminds/semver"
 	yaml "gopkg.in/yaml.v2"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -114,9 +116,25 @@ func main() {
 		log.Fatalf("error: %v", err)
 	}
 
-	// This returns a value that can be parsed by bash or whatever shell you choose
-	envString := fmt.Sprintf("OPENTTD_VERSION=\"%v\"", decodeGitReferenceVersionString(&openttdVersion))
-	fmt.Printf(envString)
+	var envVars map[string]string
+	ver := decodeGitReferenceVersionString(&openttdVersion)
+	sver, err := semver.NewVersion(ver)
+
+	// this looks kind of a dumb way of doing this, but it saves doing a map merge
+	// could also just be lazy and do two slices of string(k=v)?
+	if err != nil {
+		// Problem decoding version, just provide version string.
+		envVars = map[string]string{
+			"VERSION": ver,
+		}
+	} else {
+		envVars = map[string]string{
+			"VERSION":      ver,
+			"SEMVER_MAJOR": strconv.Itoa(int(sver.Major())),
+			"SEMVER_MINOR": strconv.Itoa(int(sver.Minor())),
+			"SEMVER_PATCH": strconv.Itoa(int(sver.Patch())),
+		}
+	}
 
 	// Try to find an appropriate output file
 	var outputFile string
@@ -139,13 +157,19 @@ func main() {
 		}
 		defer file.Close()
 
-		_, err = io.WriteString(file, envString)
-		if err != nil {
-			log.Fatalf("error: %v", err)
+		for k, v := range envVars {
+			_, err = io.WriteString(file, fmt.Sprintf("%s=%s\n", k, v))
+			if err != nil {
+				log.Fatalf("error: %v", err)
+			}
 		}
 		err = file.Sync()
 		if err != nil {
 			log.Fatalf("error: %v", err)
+		}
+	} else {
+		for k, v := range envVars {
+			fmt.Printf("%s=%s\n", k, v)
 		}
 	}
 
