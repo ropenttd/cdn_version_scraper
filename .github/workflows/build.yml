@@ -77,5 +77,5 @@ jobs:
         uses: Noelware/docker-manifest-action@0.4.2
         with:
           inputs: ghcr.io/${{ github.repository_owner }}/cdn_version_scraper:latest
-          images: ghcr.io/${{ github.repository_owner }}/cdn_version_scraper:sha-${{ github.sha }}-linux-amd64,ghcr.io/${{ github.repository_owner }}/cdn_version_scraper:sha-${{ github.sha }}-linux-arm64,ghcr.io/${{ github.repository_owner }}/cdn_version_scraper:sha-${{ github.sha }}-linux-arm-v6,ghcr.io/${{ github.repository_owner }}/cdn_version_scraper:sha-${{ github.sha }}-linux-arm-v7
+          images: ghcr.io/${{ github.repository_owner }}/cdn_version_scraper:sha-${{ github.sha }}-linux-amd64,ghcr.io/${{ github.repository_owner }}/cdn_version_scraper:sha-${{ github.sha }}-linux-arm64
           push: true
