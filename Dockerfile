@@ -18,7 +18,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o /go/bin/cdn_version_scraper
 
 # END BUILD ENVIRONMENT
-# DEPLOY ENVIRONMENT
+# DEPLOY ENVIRONMENT
 
 FROM scratch
 MAINTAINER duck. <me@duck.me.uk>

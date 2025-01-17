@@ -17,7 +17,7 @@ outputs:
     description: 'The patch semantic version for this release, if available'
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/ropenttd/cdn_version_scraper:sha-ccc1941'
+  image: 'docker://ghcr.io/ropenttd/cdn_version_scraper:latest'
   args:
   - ${{ inputs.channel }}
   env:
