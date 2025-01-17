@@ -15,7 +15,7 @@ RUN go mod download
 COPY . .
 
 # And build the binary
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o /go/bin/cdn_version_scraper
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/cdn_version_scraper
 
 # END BUILD ENVIRONMENT
 # DEPLOY ENVIRONMENT
