@@ -58,6 +58,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          provenance: false
 
   release-bundle-manifest:
     runs-on: ubuntu-latest
@@ -73,7 +74,7 @@ jobs:
           password: ${{ secrets.GH_TOKEN }}
 
       - name: Create and push manifest
-        uses: Noelware/docker-manifest-action@v0.4.2
+        uses: Noelware/docker-manifest-action@0.4.2
         with:
           inputs: $GHCR_REPO:latest
           images: $GHCR_REPO:sha-${{ github.sha }}-linux-amd64,$GHCR_REPO:sha-${{ github.sha }}-linux-arm64,$GHCR_REPO:sha-${{ github.sha }}-linux-arm-v6,$GHCR_REPO:sha-${{ github.sha }}-linux-arm-v7
